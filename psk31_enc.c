@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 {
   print_next_state_arr();
   print_output_arr();
-  //print_state_trans_arr();
+  print_state_trans_arr();
 
   FILE* fdo;
   if(argc > 1)
@@ -102,11 +102,11 @@ int cnv_enc_next(int x0)
   g1 = f1(x4,x3,x2,x1,x0);
 
   int state = 0;
-  state |= x4<<0;
-  state |= x3<<1;
+  state |= x4<<4;
+  state |= x3<<3;
   state |= x2<<2;
-  state |= x1<<3;
-  state |= x0<<4;
+  state |= x1<<1;
+  state |= x0<<0;
 
   x4 = x3;
   x3 = x2;
@@ -132,22 +132,13 @@ int f1(int x4, int x3, int x2, int x1, int x0)
 
 void print_next_state_arr()
 {
-  unsigned int next_0,next_1;
-  unsigned int prev=0;
-
-  // 00000 -> 00000 | 10000
-  // 00001 -> 00000 | 10000
-  // 00010 -> 00001 | 10001
-  // 00011 -> 00001 | 10001
-
+  unsigned int next;
   puts("unsigned int next_state_arr[NUM_STATES][2] =\n{");
 
   for(int i=0;i<32;i++)
   {
-    next_0 = i>>1;
-    next_1 = next_0|16;
-    prev = i;
-    printf("  {%2d,%2d}",next_0,next_1);
+    next = 31&(i<<1);
+    printf("  {%2d,%2d}",next,next|1);
     if(i<32)
     {
       printf(", // state %d\n",i);
@@ -170,8 +161,8 @@ void print_state_trans_arr()
 
   for(int i=1;i<33;i++)
   {
-    next_0 = prev>>1;
-    next_1 = next_0|16;
+    next_0 = 31&(prev<<1);
+    next_1 = next_0|1;
     printf("  {");
     for(int j=0;j<32;j++)
     {
@@ -187,11 +178,11 @@ void print_state_trans_arr()
       printf("%2d",s[j]);
       if(j<31)
       {
-        printf(", // state %d\n",i);
+        printf(",");
       }
       else
       {
-        printf("  // state %d\n",i);
+        printf("}, // state %d",i);
       }
     }
 
@@ -211,16 +202,12 @@ void print_state_trans_arr()
 void print_output_arr()
 {
   unsigned int g0,g1;
-  unsigned int state_if_0, state_if_1;
   unsigned int x1,x2,x3,x4;
   unsigned int os;
 
   puts("unsigned int output_state_arr[NUM_STATES][2] =\n{");
   for(int i=0;i<32;i++)
   {
-
-    state_if_0 = 30&&(i<<1);
-    state_if_1 = state_if_0 | 1;
 
     int x4 = (i&16)>>4;
     int x3 = (i& 8)>>3;
