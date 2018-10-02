@@ -1,1 +1,3 @@
 *.o
+psk31_enc
+*.dSYM

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 // convolutional encoder function
 // arr is an array of length len
@@ -12,6 +13,8 @@ int cnv_enc_next(int i);
 // generator functions
 int g0(int x4, int x3, int x2, int x1, int x0);
 int g1(int x4, int x3, int x2, int x1, int x0);
+
+void read_input(unsigned int *input, unsigned int *len);
 
 int main(int argc, char *argv[])
 {
@@ -32,8 +35,9 @@ int main(int argc, char *argv[])
     fdo = fopen(argv[1],"w");
   }
   // our sample input stream
-  unsigned int len = 20;
-  unsigned int input[] = {0,1,0,1,1,1,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0};
+  unsigned int input[1024];
+  unsigned int len;
+  read_input(input,&len);
 
   // the 2-bit output of our encoder
   // note the bit0 is g1 and bit1 is g0
@@ -49,6 +53,31 @@ int main(int argc, char *argv[])
   free(output);
   return EXIT_SUCCESS;
 }
+
+void read_input(unsigned int *input, unsigned int *len)
+{
+  int n = 0;
+  char buf[1];
+
+  while(read(0, buf, sizeof(buf))>0) {
+    switch(buf[0])
+    {
+      case '0':
+        input[n++] = 0;
+        break;
+      case '1':
+        input[n++] = 1;
+        break;
+      case '\n':
+        *len = n;
+        return;
+        break;
+      default:
+        break;
+    }
+  }
+}
+
 
 void cnv_enc(unsigned int len, unsigned int input[], unsigned int *output[])
 {

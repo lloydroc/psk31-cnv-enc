@@ -1,8 +1,11 @@
-all: psk31_enc.o ex1.o ex_psk31.o
+P=psk31_enc
+OBJECTS=
+CFLAGS=-g -Wall -O3
+LDLIBS=
+CC=gcc
 
-%.o: %.c
-	cc -o $@ $<
+$(P): $(OBJECTS)
 
 clean:
-	rm *.o
-	rm *.txt
+	rm $(P)
+	rm -rf $(P).dSYM
